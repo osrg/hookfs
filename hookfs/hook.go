@@ -28,9 +28,30 @@ type HookOnRead interface {
 }
 
 // Called on write. This also implements Hook.
-// BUG(AkihiroSuda): HookOnWrite is not yet implemented. (Of course, we also need many more things such as Stat.)
+// BUG(AkihiroSuda): HookOnWrite is not yet implemented.
 type HookOnWrite interface {
 	// if hooked is true, the real write() would not be called
 	PreWrite(path string, buf []byte, offset int64) (err error, hooked bool, ctx HookContext)
 	PostWrite(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+}
+
+// Called on mkdir. This also implements Hook.
+type HookOnMkdir interface {
+	// if hooked is true, the real mkdir() would not be called
+	PreMkdir(path string, mode uint32) (err error, hooked bool, ctx HookContext)
+	PostMkdir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+}
+
+// Called on rmdir. This also implements Hook.
+type HookOnRmdir interface {
+	// if hooked is true, the real rmdir() would not be called
+	PreRmdir(path string) (err error, hooked bool, ctx HookContext)
+	PostRmdir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+}
+
+// Called on opendir. This also implements Hook.
+type HookOnOpenDir interface {
+	// if hooked is true, the real opendir() would not be called
+	PreOpenDir(path string) (err error, hooked bool, ctx HookContext)
+	PostOpenDir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
 }

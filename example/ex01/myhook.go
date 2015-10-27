@@ -76,3 +76,78 @@ func (this *MyHook) PostRead(realRetCode int32, realBuf []byte, ctx hookfs.HookC
 	}
 	return nil, nil, false
 }
+
+// implements hookfs.HookOnMkdir
+func (this *MyHook) PreMkdir(path string, mode uint32) (error, bool, hookfs.HookContext) {
+	ctx := MyHookContext{path: path}
+	if probab(95) {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPreMkdir: returning EACCES")
+		return syscall.EACCES, true, ctx
+	}
+	return nil, false, ctx
+}
+
+// implements hookfs.HookOnMkdir
+func (this *MyHook) PostMkdir(realRetCode int32, ctx hookfs.HookContext) (error, bool) {
+	if probab(5) {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPostMkdir: returning EPERM")
+		return syscall.EPERM, true
+	}
+	return nil, false
+}
+
+// implements hookfs.HookOnRmdir
+func (this *MyHook) PreRmdir(path string) (error, bool, hookfs.HookContext) {
+	ctx := MyHookContext{path: path}
+	if probab(30) {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPreRmdir: returning EACCES")
+		return syscall.EACCES, true, ctx
+	}
+	return nil, false, ctx
+}
+
+// implements hookfs.HookOnRmdir
+func (this *MyHook) PostRmdir(realRetCode int32, ctx hookfs.HookContext) (error, bool) {
+	if probab(30) {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPostRmdir: returning EPERM")
+		return syscall.EPERM, true
+	}
+	return nil, false
+}
+
+// implements hookfs.HookOnOpenDir
+func (this *MyHook) PreOpenDir(path string) (error, bool, hookfs.HookContext) {
+	ctx := MyHookContext{path: path}
+	if probab(30) && path != "" {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPreOpenDir: returning EACCES")
+		return syscall.EACCES, true, ctx
+	}
+	return nil, false, ctx
+}
+
+// implements hookfs.HookOnOpenDir
+func (this *MyHook) PostOpenDir(realRetCode int32, ctx hookfs.HookContext) (error, bool) {
+	if probab(30) && ctx.(MyHookContext).path != "" {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPostOpenDir: returning EPERM")
+		return syscall.EPERM, true
+	}
+	return nil, false
+}

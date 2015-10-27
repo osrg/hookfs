@@ -85,7 +85,43 @@ func (this *HookFs) Link(oldName string, newName string, context *fuse.Context) 
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
 func (this *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Status {
-	return this.fs.Mkdir(name, mode, context)
+	hook, hookEnabled := this.hook.(HookOnMkdir)
+	var prehookErr, posthookErr error
+	var prehooked, posthooked bool
+	var prehookCtx HookContext
+
+	if hookEnabled {
+		prehookErr, prehooked, prehookCtx = hook.PreMkdir(name, mode)
+		if prehooked {
+			log.WithFields(log.Fields{
+				"this":       this,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("Mkdir: Prehooked")
+			if prehookErr == nil {
+				log.WithFields(log.Fields{
+					"this":       this,
+					"prehookErr": prehookErr,
+					"prehookCtx": prehookCtx,
+				}).Fatal("Mkdir is prehooked, but did not returned an error. this is very strange.")
+			}
+			return fuse.ToStatus(prehookErr)
+		}
+	}
+
+	lowerCode := this.fs.Mkdir(name, mode, context)
+	if hookEnabled {
+		posthookErr, posthooked = hook.PostMkdir(int32(lowerCode), prehookCtx)
+		if posthooked {
+			log.WithFields(log.Fields{
+				"this":        this,
+				"posthookErr": posthookErr,
+			}).Debug("Mkdir: Posthooked")
+			return fuse.ToStatus(posthookErr)
+		}
+	}
+
+	return lowerCode
 }
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
@@ -100,7 +136,43 @@ func (this *HookFs) Rename(oldName string, newName string, context *fuse.Context
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
 func (this *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
-	return this.fs.Rmdir(name, context)
+	hook, hookEnabled := this.hook.(HookOnRmdir)
+	var prehookErr, posthookErr error
+	var prehooked, posthooked bool
+	var prehookCtx HookContext
+
+	if hookEnabled {
+		prehookErr, prehooked, prehookCtx = hook.PreRmdir(name)
+		if prehooked {
+			log.WithFields(log.Fields{
+				"this":       this,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("Rmdir: Prehooked")
+			if prehookErr == nil {
+				log.WithFields(log.Fields{
+					"this":       this,
+					"prehookErr": prehookErr,
+					"prehookCtx": prehookCtx,
+				}).Fatal("Rmdir is prehooked, but did not returned an error. this is very strange.")
+			}
+			return fuse.ToStatus(prehookErr)
+		}
+	}
+
+	lowerCode := this.fs.Rmdir(name, context)
+	if hookEnabled {
+		posthookErr, posthooked = hook.PostRmdir(int32(lowerCode), prehookCtx)
+		if posthooked {
+			log.WithFields(log.Fields{
+				"this":        this,
+				"posthookErr": posthookErr,
+			}).Debug("Mkdir: Posthooked")
+			return fuse.ToStatus(posthookErr)
+		}
+	}
+
+	return lowerCode
 }
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
@@ -185,7 +257,7 @@ func (this *HookFs) Open(name string, flags uint32, context *fuse.Context) (node
 			log.WithFields(log.Fields{
 				"this":        this,
 				"posthookErr": posthookErr,
-			}).Debug("Read: Posthooked")
+			}).Debug("Open: Posthooked")
 			return hFile, fuse.ToStatus(posthookErr)
 		}
 	}
@@ -205,7 +277,43 @@ func (this *HookFs) Create(name string, flags uint32, mode uint32, context *fuse
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
 func (this *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry, fuse.Status) {
-	return this.fs.OpenDir(name, context)
+	hook, hookEnabled := this.hook.(HookOnOpenDir)
+	var prehookErr, posthookErr error
+	var prehooked, posthooked bool
+	var prehookCtx HookContext
+
+	if hookEnabled {
+		prehookErr, prehooked, prehookCtx = hook.PreOpenDir(name)
+		if prehooked {
+			log.WithFields(log.Fields{
+				"this":       this,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("OpenDir: Prehooked")
+			if prehookErr == nil {
+				log.WithFields(log.Fields{
+					"this":       this,
+					"prehookErr": prehookErr,
+					"prehookCtx": prehookCtx,
+				}).Fatal("OpenDir is prehooked, but did not returned an error. this is very strange.")
+			}
+			return nil, fuse.ToStatus(prehookErr)
+		}
+	}
+
+	lowerEnts, lowerCode := this.fs.OpenDir(name, context)
+	if hookEnabled {
+		posthookErr, posthooked = hook.PostOpenDir(int32(lowerCode), prehookCtx)
+		if posthooked {
+			log.WithFields(log.Fields{
+				"this":        this,
+				"posthookErr": posthookErr,
+			}).Debug("OpenDir: Posthooked")
+			return lowerEnts, fuse.ToStatus(posthookErr)
+		}
+	}
+
+	return lowerEnts, lowerCode
 }
 
 // implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
