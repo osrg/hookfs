@@ -20,7 +20,7 @@ func newHookServer(hookfs *HookFs) (*fuse.Server, error) {
 	conn := nodefs.NewFileSystemConnector(pathFs.Root(), opts)
 	originalAbs, _ := filepath.Abs(hookfs.Original)
 	mOpts := &fuse.MountOptions{
-		AllowOther: false,
+		AllowOther: true,
 		Name:       hookfs.FsName,
 		FsName:     originalAbs,
 	}
