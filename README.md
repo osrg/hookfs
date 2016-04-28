@@ -4,13 +4,13 @@
 
 ## Possible Recipes
 
-* Fault Injection (Example: [Earthquake](https://github.com/osrg/earthquake))
+* Fault Injection (Example: [Namazu](https://github.com/osrg/namazu))
 * Cache
 * Malware Detection
 
 and so on..
 
-HookFS was originally developed for [Earthquake](https://github.com/osrg/earthquake), but we believe HookFS can be also used for other purposes.
+HookFS was originally developed for [Namazu](https://github.com/osrg/namazu), but we believe HookFS can be also used for other purposes.
 
 ## Install
 
@@ -46,7 +46,7 @@ err = fs.Serve()
 See [`hook.go`](hookfs/hook.go) for further information. [GoDoc](https://godoc.org/github.com/osrg/hookfs) is also your friend.
 
 ## Related Projects
-* [Earthquake](https://github.com/osrg/earthquake)
+* [Namazu (Earthquake)](https://github.com/osrg/namazu)
 * [HookSwitch](https://github.com/osrg/hookswitch)
 
 ## How to Contribute
