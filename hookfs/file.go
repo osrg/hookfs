@@ -112,7 +112,36 @@ func (this *hookFile) Release() {
 
 // implements nodefs.File
 func (this *hookFile) Fsync(flags int) fuse.Status {
-	return this.file.Fsync(flags)
+	hook, hookEnabled := this.hook.(HookOnFsync)
+	var prehookErr, posthookErr error
+	var prehooked, posthooked bool
+	var prehookCtx HookContext
+
+	if hookEnabled {
+		prehookErr, prehooked, prehookCtx = hook.PreFsync(this.name, uint32(flags))
+		if prehooked {
+			log.WithFields(log.Fields{
+				"this":       this,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("Fsync: Prehooked")
+			return fuse.ToStatus(prehookErr)
+		}
+	}
+
+	lowerCode := this.file.Fsync(flags)
+	if hookEnabled {
+		posthookErr, posthooked = hook.PostFsync(int32(lowerCode), prehookCtx)
+		if posthooked {
+			log.WithFields(log.Fields{
+				"this":        this,
+				"posthookErr": posthookErr,
+			}).Debug("Fsync: Posthooked")
+			return fuse.ToStatus(posthookErr)
+		}
+	}
+
+	return lowerCode
 }
 
 // implements nodefs.File
