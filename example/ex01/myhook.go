@@ -151,3 +151,30 @@ func (this *MyHook) PostOpenDir(realRetCode int32, ctx hookfs.HookContext) (erro
 	}
 	return nil, false
 }
+
+// implements hookfs.HookOnFsync
+func (this *MyHook) PreFsync(path string, flags uint32) (error, bool, hookfs.HookContext) {
+	ctx := MyHookContext{path: path}
+	if probab(90) && path != "" {
+		sleep := 3 * time.Second
+		log.WithFields(log.Fields{
+			"this":  this,
+			"ctx":   ctx,
+			"sleep": sleep,
+		}).Info("MyPreFsync: sleeping")
+		time.Sleep(sleep)
+	}
+	return nil, false, ctx
+}
+
+// implements hookfs.HookOnFsync
+func (this *MyHook) PostFsync(realRetCode int32, ctx hookfs.HookContext) (error, bool) {
+	if probab(80) && ctx.(MyHookContext).path != "" {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPostFsync: returning EIO")
+		return syscall.EIO, true
+	}
+	return nil, false
+}

@@ -55,3 +55,10 @@ type HookOnOpenDir interface {
 	PreOpenDir(path string) (err error, hooked bool, ctx HookContext)
 	PostOpenDir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
 }
+
+// Called on fsync. This also implements Hook.
+type HookOnFsync interface {
+	// if hooked is true, the real fsync() would not be called
+	PreFsync(path string, flags uint32) (err error, hooked bool, ctx HookContext)
+	PostFsync(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+}
