@@ -2,10 +2,11 @@ package hookfs
 
 import (
 	"fmt"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/hanwen/go-fuse/fuse"
 	"github.com/hanwen/go-fuse/fuse/nodefs"
-	"time"
 )
 
 type hookFile struct {
@@ -172,4 +173,9 @@ func (this *hookFile) Utimens(atime *time.Time, mtime *time.Time) fuse.Status {
 // implements nodefs.File
 func (this *hookFile) Allocate(off uint64, size uint64, mode uint32) fuse.Status {
 	return this.file.Allocate(off, size, mode)
+}
+
+// implements nodefs.Flock
+func (this *hookFile) Flock(flags int) fuse.Status {
+	return this.file.Flock(flags)
 }
