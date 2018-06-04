@@ -1,10 +1,11 @@
 package main
 
 import (
-	log "github.com/Sirupsen/logrus"
-	hookfs "github.com/osrg/hookfs/hookfs"
 	"syscall"
 	"time"
+
+	log "github.com/Sirupsen/logrus"
+	hookfs "github.com/osrg/hookfs/hookfs"
 )
 
 // implements hookfs.HookContext
@@ -75,6 +76,33 @@ func (this *MyHook) PostRead(realRetCode int32, realBuf []byte, ctx hookfs.HookC
 		return buf, nil, true
 	}
 	return nil, nil, false
+}
+
+// implements hookfs.HookOnWrite
+func (this *MyHook) PreWrite(path string, buf []byte, offset int64) (error, bool, hookfs.HookContext) {
+	ctx := MyHookContext{path: path}
+	if probab(3) {
+		sleep := 3 * time.Second
+		log.WithFields(log.Fields{
+			"this":  this,
+			"ctx":   ctx,
+			"sleep": sleep,
+		}).Info("MyPreWrite: sleeping")
+		time.Sleep(sleep)
+	}
+	return nil, false, ctx
+}
+
+// implements hookfs.HookOnWrite
+func (this *MyHook) PostWrite(realRetCode int32, ctx hookfs.HookContext) (error, bool) {
+	if probab(70) {
+		log.WithFields(log.Fields{
+			"this": this,
+			"ctx":  ctx,
+		}).Info("MyPostWrite: returning ENOSPC")
+		return syscall.ENOSPC, true
+	}
+	return nil, false
 }
 
 // implements hookfs.HookOnMkdir
