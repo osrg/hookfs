@@ -98,7 +98,36 @@ func (this *hookFile) Read(dest []byte, off int64) (fuse.ReadResult, fuse.Status
 
 // implements nodefs.File
 func (this *hookFile) Write(data []byte, off int64) (uint32, fuse.Status) {
-	return this.file.Write(data, off)
+	hook, hookEnabled := this.hook.(HookOnWrite)
+	var prehookErr, posthookErr error
+	var prehooked, posthooked bool
+	var prehookCtx HookContext
+
+	if hookEnabled {
+		prehookErr, prehooked, prehookCtx = hook.PreWrite(this.name, data, off)
+		if prehooked {
+			log.WithFields(log.Fields{
+				"this":       this,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("Write: Prehooked")
+			return 0, fuse.ToStatus(prehookErr)
+		}
+	}
+
+	lowerWritten, lowerCode := this.file.Write(data, off)
+	if hookEnabled {
+		posthookErr, posthooked = hook.PostWrite(int32(lowerCode), prehookCtx)
+		if posthooked {
+			log.WithFields(log.Fields{
+				"this":        this,
+				"posthookErr": posthookErr,
+			}).Debug("Write: Posthooked")
+			return 0, fuse.ToStatus(posthookErr)
+		}
+	}
+
+	return lowerWritten, lowerCode
 }
 
 // implements nodefs.File
