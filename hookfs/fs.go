@@ -10,7 +10,7 @@ import (
 	"github.com/hanwen/go-fuse/fuse/pathfs"
 )
 
-// HookFS object
+// HookFs is the object hooking the fs.
 type HookFs struct {
 	Original   string
 	Mountpoint string
@@ -19,7 +19,7 @@ type HookFs struct {
 	hook       Hook
 }
 
-// Instantiate a new HookFS object
+// NewHookFs creates a new HookFs object
 func NewHookFs(original string, mountpoint string, hook Hook) (*HookFs, error) {
 	log.WithFields(log.Fields{
 		"original":   original,
@@ -37,55 +37,55 @@ func NewHookFs(original string, mountpoint string, hook Hook) (*HookFs, error) {
 	return hookfs, nil
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) String() string {
+// String implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) String() string {
 	return fmt.Sprintf("HookFs{Original=%s, Mountpoint=%s, FsName=%s, Underlying fs=%s, hook=%s}",
-		this.Original, this.Mountpoint, this.FsName, this.fs.String(), this.hook)
+		h.Original, h.Mountpoint, h.FsName, h.fs.String(), h.hook)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) SetDebug(debug bool) {
-	this.fs.SetDebug(debug)
+// SetDebug implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) SetDebug(debug bool) {
+	h.fs.SetDebug(debug)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) GetAttr(name string, context *fuse.Context) (*fuse.Attr, fuse.Status) {
-	return this.fs.GetAttr(name, context)
+// GetAttr implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) GetAttr(name string, context *fuse.Context) (*fuse.Attr, fuse.Status) {
+	return h.fs.GetAttr(name, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Chmod(name string, mode uint32, context *fuse.Context) fuse.Status {
-	return this.fs.Chmod(name, mode, context)
+// Chmod implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Chmod(name string, mode uint32, context *fuse.Context) fuse.Status {
+	return h.fs.Chmod(name, mode, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Chown(name string, uid uint32, gid uint32, context *fuse.Context) fuse.Status {
-	return this.fs.Chown(name, uid, gid, context)
+// Chown implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Chown(name string, uid uint32, gid uint32, context *fuse.Context) fuse.Status {
+	return h.fs.Chown(name, uid, gid, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Utimens(name string, Atime *time.Time, Mtime *time.Time, context *fuse.Context) fuse.Status {
-	return this.fs.Utimens(name, Atime, Mtime, context)
+// Utimens implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Utimens(name string, Atime *time.Time, Mtime *time.Time, context *fuse.Context) fuse.Status {
+	return h.fs.Utimens(name, Atime, Mtime, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Truncate(name string, size uint64, context *fuse.Context) fuse.Status {
-	return this.fs.Truncate(name, size, context)
+// Truncate implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Truncate(name string, size uint64, context *fuse.Context) fuse.Status {
+	return h.fs.Truncate(name, size, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Access(name string, mode uint32, context *fuse.Context) fuse.Status {
-	return this.fs.Access(name, mode, context)
+// Access implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Access(name string, mode uint32, context *fuse.Context) fuse.Status {
+	return h.fs.Access(name, mode, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Link(oldName string, newName string, context *fuse.Context) fuse.Status {
-	return this.fs.Link(oldName, newName, context)
+// Link implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Link(oldName string, newName string, context *fuse.Context) fuse.Status {
+	return h.fs.Link(oldName, newName, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Status {
-	hook, hookEnabled := this.hook.(HookOnMkdir)
+// Mkdir implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Status {
+	hook, hookEnabled := h.hook.(HookOnMkdir)
 	var prehookErr, posthookErr error
 	var prehooked, posthooked bool
 	var prehookCtx HookContext
@@ -94,27 +94,27 @@ func (this *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.
 		prehookErr, prehooked, prehookCtx = hook.PreMkdir(name, mode)
 		if prehooked {
 			log.WithFields(log.Fields{
-				"this":       this,
+				"h":          h,
 				"prehookErr": prehookErr,
 				"prehookCtx": prehookCtx,
 			}).Debug("Mkdir: Prehooked")
 			if prehookErr == nil {
 				log.WithFields(log.Fields{
-					"this":       this,
+					"h":          h,
 					"prehookErr": prehookErr,
 					"prehookCtx": prehookCtx,
-				}).Fatal("Mkdir is prehooked, but did not returned an error. this is very strange.")
+				}).Fatal("Mkdir is prehooked, but did not returned an error. h is very strange.")
 			}
 			return fuse.ToStatus(prehookErr)
 		}
 	}
 
-	lowerCode := this.fs.Mkdir(name, mode, context)
+	lowerCode := h.fs.Mkdir(name, mode, context)
 	if hookEnabled {
 		posthookErr, posthooked = hook.PostMkdir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
-				"this":        this,
+				"h":           h,
 				"posthookErr": posthookErr,
 			}).Debug("Mkdir: Posthooked")
 			return fuse.ToStatus(posthookErr)
@@ -124,19 +124,19 @@ func (this *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.
 	return lowerCode
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Mknod(name string, mode uint32, dev uint32, context *fuse.Context) fuse.Status {
-	return this.fs.Mknod(name, mode, dev, context)
+// Mknod implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Mknod(name string, mode uint32, dev uint32, context *fuse.Context) fuse.Status {
+	return h.fs.Mknod(name, mode, dev, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Rename(oldName string, newName string, context *fuse.Context) fuse.Status {
-	return this.fs.Rename(oldName, newName, context)
+// Rename implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Rename(oldName string, newName string, context *fuse.Context) fuse.Status {
+	return h.fs.Rename(oldName, newName, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
-	hook, hookEnabled := this.hook.(HookOnRmdir)
+// Rmdir implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
+	hook, hookEnabled := h.hook.(HookOnRmdir)
 	var prehookErr, posthookErr error
 	var prehooked, posthooked bool
 	var prehookCtx HookContext
@@ -145,27 +145,27 @@ func (this *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
 		prehookErr, prehooked, prehookCtx = hook.PreRmdir(name)
 		if prehooked {
 			log.WithFields(log.Fields{
-				"this":       this,
+				"h":          h,
 				"prehookErr": prehookErr,
 				"prehookCtx": prehookCtx,
 			}).Debug("Rmdir: Prehooked")
 			if prehookErr == nil {
 				log.WithFields(log.Fields{
-					"this":       this,
+					"h":          h,
 					"prehookErr": prehookErr,
 					"prehookCtx": prehookCtx,
-				}).Fatal("Rmdir is prehooked, but did not returned an error. this is very strange.")
+				}).Fatal("Rmdir is prehooked, but did not returned an error. h is very strange.")
 			}
 			return fuse.ToStatus(prehookErr)
 		}
 	}
 
-	lowerCode := this.fs.Rmdir(name, context)
+	lowerCode := h.fs.Rmdir(name, context)
 	if hookEnabled {
 		posthookErr, posthooked = hook.PostRmdir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
-				"this":        this,
+				"h":           h,
 				"posthookErr": posthookErr,
 			}).Debug("Mkdir: Posthooked")
 			return fuse.ToStatus(posthookErr)
@@ -175,53 +175,53 @@ func (this *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
 	return lowerCode
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Unlink(name string, context *fuse.Context) fuse.Status {
-	return this.fs.Unlink(name, context)
+// Unlink implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Unlink(name string, context *fuse.Context) fuse.Status {
+	return h.fs.Unlink(name, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) GetXAttr(name string, attribute string, context *fuse.Context) ([]byte, fuse.Status) {
-	return this.fs.GetXAttr(name, attribute, context)
+// GetXAttr implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) GetXAttr(name string, attribute string, context *fuse.Context) ([]byte, fuse.Status) {
+	return h.fs.GetXAttr(name, attribute, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) ListXAttr(name string, context *fuse.Context) ([]string, fuse.Status) {
-	return this.fs.ListXAttr(name, context)
+// ListXAttr implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) ListXAttr(name string, context *fuse.Context) ([]string, fuse.Status) {
+	return h.fs.ListXAttr(name, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) RemoveXAttr(name string, attr string, context *fuse.Context) fuse.Status {
-	return this.fs.RemoveXAttr(name, attr, context)
+// RemoveXAttr implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) RemoveXAttr(name string, attr string, context *fuse.Context) fuse.Status {
+	return h.fs.RemoveXAttr(name, attr, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) SetXAttr(name string, attr string, data []byte, flags int, context *fuse.Context) fuse.Status {
-	return this.fs.SetXAttr(name, attr, data, flags, context)
+// SetXAttr implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) SetXAttr(name string, attr string, data []byte, flags int, context *fuse.Context) fuse.Status {
+	return h.fs.SetXAttr(name, attr, data, flags, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) OnMount(nodeFs *pathfs.PathNodeFs) {
-	this.fs.OnMount(nodeFs)
-	hook, hookEnabled := this.hook.(HookWithInit)
+// OnMount implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) OnMount(nodeFs *pathfs.PathNodeFs) {
+	h.fs.OnMount(nodeFs)
+	hook, hookEnabled := h.hook.(HookWithInit)
 	if hookEnabled {
 		err := hook.Init()
 		if err != nil {
 			log.Error(err)
 			log.Warn("Disabling hook")
-			this.hook = nil
+			h.hook = nil
 		}
 	}
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) OnUnmount() {
-	this.fs.OnUnmount()
+// OnUnmount implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) OnUnmount() {
+	h.fs.OnUnmount()
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Open(name string, flags uint32, context *fuse.Context) (nodefs.File, fuse.Status) {
-	hook, hookEnabled := this.hook.(HookOnOpen)
+// Open implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Open(name string, flags uint32, context *fuse.Context) (nodefs.File, fuse.Status) {
+	hook, hookEnabled := h.hook.(HookOnOpen)
 	var prehookErr, posthookErr error
 	var prehooked, posthooked bool
 	var prehookCtx HookContext
@@ -230,23 +230,23 @@ func (this *HookFs) Open(name string, flags uint32, context *fuse.Context) (node
 		prehookErr, prehooked, prehookCtx = hook.PreOpen(name, flags)
 		if prehooked {
 			log.WithFields(log.Fields{
-				"this":       this,
+				"h":          h,
 				"prehookErr": prehookErr,
 				"prehookCtx": prehookCtx,
 			}).Debug("Open: Prehooked")
 			if prehookErr == nil {
 				log.WithFields(log.Fields{
-					"this":       this,
+					"h":          h,
 					"prehookErr": prehookErr,
 					"prehookCtx": prehookCtx,
-				}).Fatal("Open is prehooked, but did not returned an error. this is very strange.")
+				}).Fatal("Open is prehooked, but did not returned an error. h is very strange.")
 			}
 			return nil, fuse.ToStatus(prehookErr)
 		}
 	}
 
-	lowerFile, lowerCode := this.fs.Open(name, flags, context)
-	hFile, hErr := newHookFile(lowerFile, name, this.hook)
+	lowerFile, lowerCode := h.fs.Open(name, flags, context)
+	hFile, hErr := newHookFile(lowerFile, name, h.hook)
 	if hErr != nil {
 		log.WithField("error", hErr).Panic("NewHookFile() should not cause an error")
 	}
@@ -255,7 +255,7 @@ func (this *HookFs) Open(name string, flags uint32, context *fuse.Context) (node
 		posthookErr, posthooked = hook.PostOpen(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
-				"this":        this,
+				"h":           h,
 				"posthookErr": posthookErr,
 			}).Debug("Open: Posthooked")
 			return hFile, fuse.ToStatus(posthookErr)
@@ -265,19 +265,19 @@ func (this *HookFs) Open(name string, flags uint32, context *fuse.Context) (node
 	return hFile, lowerCode
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Create(name string, flags uint32, mode uint32, context *fuse.Context) (nodefs.File, fuse.Status) {
-	lowerFile, lowerCode := this.fs.Create(name, flags, mode, context)
-	hFile, hErr := newHookFile(lowerFile, name, this.hook)
+// Create implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Create(name string, flags uint32, mode uint32, context *fuse.Context) (nodefs.File, fuse.Status) {
+	lowerFile, lowerCode := h.fs.Create(name, flags, mode, context)
+	hFile, hErr := newHookFile(lowerFile, name, h.hook)
 	if hErr != nil {
 		log.WithField("error", hErr).Panic("NewHookFile() should not cause an error")
 	}
 	return hFile, lowerCode
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry, fuse.Status) {
-	hook, hookEnabled := this.hook.(HookOnOpenDir)
+// OpenDir implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry, fuse.Status) {
+	hook, hookEnabled := h.hook.(HookOnOpenDir)
 	var prehookErr, posthookErr error
 	var prehooked, posthooked bool
 	var prehookCtx HookContext
@@ -286,27 +286,27 @@ func (this *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry
 		prehookErr, prehooked, prehookCtx = hook.PreOpenDir(name)
 		if prehooked {
 			log.WithFields(log.Fields{
-				"this":       this,
+				"h":          h,
 				"prehookErr": prehookErr,
 				"prehookCtx": prehookCtx,
 			}).Debug("OpenDir: Prehooked")
 			if prehookErr == nil {
 				log.WithFields(log.Fields{
-					"this":       this,
+					"h":          h,
 					"prehookErr": prehookErr,
 					"prehookCtx": prehookCtx,
-				}).Fatal("OpenDir is prehooked, but did not returned an error. this is very strange.")
+				}).Fatal("OpenDir is prehooked, but did not returned an error. h is very strange.")
 			}
 			return nil, fuse.ToStatus(prehookErr)
 		}
 	}
 
-	lowerEnts, lowerCode := this.fs.OpenDir(name, context)
+	lowerEnts, lowerCode := h.fs.OpenDir(name, context)
 	if hookEnabled {
 		posthookErr, posthooked = hook.PostOpenDir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
-				"this":        this,
+				"h":           h,
 				"posthookErr": posthookErr,
 			}).Debug("OpenDir: Posthooked")
 			return lowerEnts, fuse.ToStatus(posthookErr)
@@ -316,24 +316,24 @@ func (this *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry
 	return lowerEnts, lowerCode
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Symlink(value string, linkName string, context *fuse.Context) fuse.Status {
-	return this.fs.Symlink(value, linkName, context)
+// Symlink implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Symlink(value string, linkName string, context *fuse.Context) fuse.Status {
+	return h.fs.Symlink(value, linkName, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) Readlink(name string, context *fuse.Context) (string, fuse.Status) {
-	return this.fs.Readlink(name, context)
+// Readlink implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) Readlink(name string, context *fuse.Context) (string, fuse.Status) {
+	return h.fs.Readlink(name, context)
 }
 
-// implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call this manually.
-func (this *HookFs) StatFs(name string) *fuse.StatfsOut {
-	return this.fs.StatFs(name)
+// StatFs implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
+func (h *HookFs) StatFs(name string) *fuse.StatfsOut {
+	return h.fs.StatFs(name)
 }
 
-// Start the server (blocking).
-func (this *HookFs) Serve() error {
-	server, err := newHookServer(this)
+// Serve starts the server (blocking).
+func (h *HookFs) Serve() error {
+	server, err := newHookServer(h)
 	if err != nil {
 		return err
 	}

@@ -1,14 +1,15 @@
 package hookfs
 
 import (
-	log "github.com/Sirupsen/logrus"
 	"os"
+
+	log "github.com/Sirupsen/logrus"
 )
 
-// minimum log level
+// LogLevelMin is the minimum log level
 const LogLevelMin = 0
 
-// maximum log level
+// LogLevelMax is the maximum log level
 const LogLevelMax = 2
 
 var logLevel int
@@ -18,12 +19,12 @@ func initLog() {
 	log.SetOutput(os.Stderr)
 }
 
-// Getter for log level
+// LogLevel gets the log level.
 func LogLevel() int {
 	return logLevel
 }
 
-// Setter for log level. newLevel must be >= LogLevelMin, and <= LogLevelMax.
+// SetLogLevel sets the log level. newLevel must be >= LogLevelMin, and <= LogLevelMax.
 func SetLogLevel(newLevel int) {
 	if newLevel < LogLevelMin || newLevel > LogLevelMax {
 		log.Fatalf("Bad log level: %d (must be %d..%d)", newLevel, LogLevelMin, LogLevelMax)
