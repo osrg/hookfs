@@ -53,7 +53,7 @@ func (h *hookFile) Read(dest []byte, off int64) (fuse.ReadResult, fuse.Status) {
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookBuf, prehookErr, prehooked, prehookCtx = hook.PreRead(h.name, int64(len(dest)), off)
+		prehookBuf, prehooked, prehookCtx, prehookErr = hook.PreRead(h.name, int64(len(dest)), off)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h": h,
@@ -71,7 +71,7 @@ func (h *hookFile) Read(dest []byte, off int64) (fuse.ReadResult, fuse.Status) {
 		if lowerRRBufStatus != fuse.OK {
 			log.WithField("error", lowerRRBufStatus).Panic("lowerRR.Bytes() should not cause an error")
 		}
-		posthookBuf, posthookErr, posthooked = hook.PostRead(int32(lowerCode), lowerRRBuf, prehookCtx)
+		posthookBuf, posthooked, posthookErr = hook.PostRead(int32(lowerCode), lowerRRBuf, prehookCtx)
 		if posthooked {
 			if len(posthookBuf) != len(lowerRRBuf) {
 				log.WithFields(log.Fields{
@@ -104,7 +104,7 @@ func (h *hookFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreWrite(h.name, data, off)
+		prehooked, prehookCtx, prehookErr = hook.PreWrite(h.name, data, off)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -117,7 +117,7 @@ func (h *hookFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 
 	lowerWritten, lowerCode := h.file.Write(data, off)
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostWrite(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostWrite(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,
@@ -148,7 +148,7 @@ func (h *hookFile) Fsync(flags int) fuse.Status {
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreFsync(h.name, uint32(flags))
+		prehooked, prehookCtx, prehookErr = hook.PreFsync(h.name, uint32(flags))
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -161,7 +161,7 @@ func (h *hookFile) Fsync(flags int) fuse.Status {
 
 	lowerCode := h.file.Fsync(flags)
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostFsync(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostFsync(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,

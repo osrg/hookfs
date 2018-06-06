@@ -91,7 +91,7 @@ func (h *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Sta
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreMkdir(name, mode)
+		prehooked, prehookCtx, prehookErr = hook.PreMkdir(name, mode)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -111,7 +111,7 @@ func (h *HookFs) Mkdir(name string, mode uint32, context *fuse.Context) fuse.Sta
 
 	lowerCode := h.fs.Mkdir(name, mode, context)
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostMkdir(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostMkdir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,
@@ -142,7 +142,7 @@ func (h *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreRmdir(name)
+		prehooked, prehookCtx, prehookErr = hook.PreRmdir(name)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -162,7 +162,7 @@ func (h *HookFs) Rmdir(name string, context *fuse.Context) fuse.Status {
 
 	lowerCode := h.fs.Rmdir(name, context)
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostRmdir(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostRmdir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,
@@ -227,7 +227,7 @@ func (h *HookFs) Open(name string, flags uint32, context *fuse.Context) (nodefs.
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreOpen(name, flags)
+		prehooked, prehookCtx, prehookErr = hook.PreOpen(name, flags)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -252,7 +252,7 @@ func (h *HookFs) Open(name string, flags uint32, context *fuse.Context) (nodefs.
 	}
 
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostOpen(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostOpen(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,
@@ -283,7 +283,7 @@ func (h *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry, f
 	var prehookCtx HookContext
 
 	if hookEnabled {
-		prehookErr, prehooked, prehookCtx = hook.PreOpenDir(name)
+		prehooked, prehookCtx, prehookErr = hook.PreOpenDir(name)
 		if prehooked {
 			log.WithFields(log.Fields{
 				"h":          h,
@@ -303,7 +303,7 @@ func (h *HookFs) OpenDir(name string, context *fuse.Context) ([]fuse.DirEntry, f
 
 	lowerEnts, lowerCode := h.fs.OpenDir(name, context)
 	if hookEnabled {
-		posthookErr, posthooked = hook.PostOpenDir(int32(lowerCode), prehookCtx)
+		posthooked, posthookErr = hook.PostOpenDir(int32(lowerCode), prehookCtx)
 		if posthooked {
 			log.WithFields(log.Fields{
 				"h":           h,
