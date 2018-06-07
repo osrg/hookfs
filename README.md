@@ -30,8 +30,8 @@ You have to implement `HookXXX` (e.g. `HookOnOpen`, `HookOnRead`, `HookOnWrite`,
 ```go
 type HookOnRead interface {
 	// if hooked is true, the real read() would not be called	
-	PreRead(path string, length int64, offset int64) (buf []byte, err error, hooked bool, ctx HookContext)
-	PostRead(realRetCode int32, realBuf []byte, prehookCtx HookContext) (buf []byte, err error, hooked bool)
+	PreRead(path string, length int64, offset int64) (buf []byte, hooked bool, ctx HookContext, err error)
+	PostRead(realRetCode int32, realBuf []byte, prehookCtx HookContext) (buf []byte, hooked bool, err error)
 }
 ```
 	

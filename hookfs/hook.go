@@ -16,48 +16,48 @@ type HookWithInit interface {
 // HookOnOpen is called on open. This also implements Hook.
 type HookOnOpen interface {
 	// if hooked is true, the real open() would not be called
-	PreOpen(path string, flags uint32) (err error, hooked bool, ctx HookContext)
-	PostOpen(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreOpen(path string, flags uint32) (hooked bool, ctx HookContext, err error)
+	PostOpen(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
 
 // HookOnRead is called on read. This also implements Hook.
 type HookOnRead interface {
 	// if hooked is true, the real read() would not be called
-	PreRead(path string, length int64, offset int64) (buf []byte, err error, hooked bool, ctx HookContext)
-	PostRead(realRetCode int32, realBuf []byte, prehookCtx HookContext) (buf []byte, err error, hooked bool)
+	PreRead(path string, length int64, offset int64) (buf []byte, hooked bool, ctx HookContext, err error)
+	PostRead(realRetCode int32, realBuf []byte, prehookCtx HookContext) (buf []byte, hooked bool, err error)
 }
 
 // HookOnWrite is called on write. This also implements Hook.
 type HookOnWrite interface {
 	// if hooked is true, the real write() would not be called
-	PreWrite(path string, buf []byte, offset int64) (err error, hooked bool, ctx HookContext)
-	PostWrite(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreWrite(path string, buf []byte, offset int64) (hooked bool, ctx HookContext, err error)
+	PostWrite(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
 
 // HookOnMkdir is called on mkdir. This also implements Hook.
 type HookOnMkdir interface {
 	// if hooked is true, the real mkdir() would not be called
-	PreMkdir(path string, mode uint32) (err error, hooked bool, ctx HookContext)
-	PostMkdir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreMkdir(path string, mode uint32) (hooked bool, ctx HookContext, err error)
+	PostMkdir(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
 
 // HookOnRmdir is called on rmdir. This also implements Hook.
 type HookOnRmdir interface {
 	// if hooked is true, the real rmdir() would not be called
-	PreRmdir(path string) (err error, hooked bool, ctx HookContext)
-	PostRmdir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreRmdir(path string) (hooked bool, ctx HookContext, err error)
+	PostRmdir(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
 
 // HookOnOpenDir is called on opendir. This also implements Hook.
 type HookOnOpenDir interface {
 	// if hooked is true, the real opendir() would not be called
-	PreOpenDir(path string) (err error, hooked bool, ctx HookContext)
-	PostOpenDir(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreOpenDir(path string) (hooked bool, ctx HookContext, err error)
+	PostOpenDir(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
 
 // HookOnFsync is called on fsync. This also implements Hook.
 type HookOnFsync interface {
 	// if hooked is true, the real fsync() would not be called
-	PreFsync(path string, flags uint32) (err error, hooked bool, ctx HookContext)
-	PostFsync(realRetCode int32, prehookCtx HookContext) (err error, hooked bool)
+	PreFsync(path string, flags uint32) (hooked bool, ctx HookContext, err error)
+	PostFsync(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
