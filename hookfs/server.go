@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"time"
 
-	// log "github.com/Sirupsen/logrus"
+	// log "github.com/sirupsen/logrus"
 	"github.com/hanwen/go-fuse/fuse"
 	"github.com/hanwen/go-fuse/fuse/nodefs"
 	"github.com/hanwen/go-fuse/fuse/pathfs"

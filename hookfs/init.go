@@ -3,7 +3,7 @@ package hookfs
 import (
 	"os"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // LogLevelMin is the minimum log level

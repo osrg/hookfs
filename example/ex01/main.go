@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	log "github.com/Sirupsen/logrus"
-	hookfs "github.com/osrg/hookfs/hookfs"
 	"math/rand"
 	"os"
 	"time"
+
+	hookfs "github.com/osrg/hookfs/hookfs"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
