@@ -4,8 +4,8 @@ import (
 	"syscall"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	hookfs "github.com/osrg/hookfs/hookfs"
+	log "github.com/sirupsen/logrus"
 )
 
 // MyHookContext implements hookfs.HookContext
