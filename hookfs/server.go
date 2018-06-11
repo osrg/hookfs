@@ -16,7 +16,8 @@ func newHookServer(hookfs *HookFs) (*fuse.Server, error) {
 		AttrTimeout:     time.Second,
 		EntryTimeout:    time.Second,
 	}
-	pathFs := pathfs.NewPathNodeFs(hookfs, nil)
+	pathFsOpts := &pathfs.PathNodeFsOptions{ClientInodes: true}
+	pathFs := pathfs.NewPathNodeFs(hookfs, pathFsOpts)
 	conn := nodefs.NewFileSystemConnector(pathFs.Root(), opts)
 	originalAbs, _ := filepath.Abs(hookfs.Original)
 	mOpts := &fuse.MountOptions{
