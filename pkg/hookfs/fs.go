@@ -131,7 +131,40 @@ func (h *HookFs) Mknod(name string, mode uint32, dev uint32, context *fuse.Conte
 
 // Rename implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
 func (h *HookFs) Rename(oldName string, newName string, context *fuse.Context) fuse.Status {
-	return h.fs.Rename(oldName, newName, context)
+	hook, hookEnabled := h.hook.(HookOnRename)
+	if hookEnabled {
+		preHooked, prehookCtx, prehookErr := hook.PreRename(oldName, newName)
+		if preHooked {
+			log.WithFields(log.Fields{
+				"h":          h,
+				"prehookErr": prehookErr,
+				"prehookCtx": prehookCtx,
+			}).Debug("Rename: Prehooked")
+
+			if prehookErr != nil {
+				return fuse.ToStatus(prehookErr)
+			}
+		}
+	}
+
+	status := h.fs.Rename(oldName, newName, context)
+
+	if hookEnabled {
+		postHooked, posthookCtx, posthookErr := hook.PostRename(oldName, newName)
+		if postHooked {
+			log.WithFields(log.Fields{
+				"h":          h,
+				"posthookErr": postHooked,
+				"posthookCtx": posthookCtx,
+			}).Debug("Rename: Posthooked")
+
+			if posthookErr != nil {
+				return fuse.ToStatus(posthookErr)
+			}
+		}
+	}
+
+	return status
 }
 
 // Rmdir implements hanwen/go-fuse/fuse/pathfs.FileSystem. You are not expected to call h manually.
@@ -339,4 +372,19 @@ func (h *HookFs) Serve() error {
 	}
 	server.Serve()
 	return nil
+}
+
+// Serve initiates the FUSE loop. Normally, callers should run Serve()
+// and wait for it to exit, but tests will want to run this in a
+// goroutine.
+func (h *HookFs) ServeAsync() (*fuse.Server, error) {
+	server, err := newHookServer(h)
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		server.Serve()
+	}()
+
+	return server, nil
 }

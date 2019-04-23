@@ -3,20 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/qiffang/hookfs/pkg/example"
+	"github.com/qiffang/hookfs/pkg/hookfs"
 	"math/rand"
 	"os"
 	"time"
 
-	hookfs "github.com/osrg/hookfs/hookfs"
+	//hookfs "github.com/osrg/hookfs/hookfs"
 	log "github.com/sirupsen/logrus"
 )
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-}
-
-func probab(percentage int) bool {
-	return rand.Intn(99) < percentage
 }
 
 func main() {
@@ -43,7 +41,7 @@ func main() {
 }
 
 func serve(original string, mountpoint string) {
-	fs, err := hookfs.NewHookFs(original, mountpoint, &MyHook{})
+	fs, err := hookfs.NewHookFs(original, mountpoint, &example.MyHook{})
 	if err != nil {
 		log.Fatal(err)
 	}
