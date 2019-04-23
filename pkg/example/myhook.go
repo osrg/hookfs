@@ -1,10 +1,11 @@
-package main
+package example
 
 import (
+	"math/rand"
 	"syscall"
 	"time"
 
-	hookfs "github.com/osrg/hookfs/hookfs"
+	hookfs "github.com/osrg/hookfs/pkg/hookfs"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -205,4 +206,8 @@ func (h *MyHook) PostFsync(realRetCode int32, ctx hookfs.HookContext) (bool, err
 		return true, syscall.EIO
 	}
 	return false, nil
+}
+
+func probab(percentage int) bool {
+	return rand.Intn(99) < percentage
 }

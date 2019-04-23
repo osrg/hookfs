@@ -61,3 +61,9 @@ type HookOnFsync interface {
 	PreFsync(path string, flags uint32) (hooked bool, ctx HookContext, err error)
 	PostFsync(realRetCode int32, prehookCtx HookContext) (hooked bool, err error)
 }
+
+// HookOnRename is called on rename
+type HookOnRename interface {
+	PreRename(oldPatgh string, newPath string) (hooked bool, ctx HookContext, err error)
+	PostRename(oldPatgh string, newPath string) (hooked bool, ctx HookContext, err error)
+}

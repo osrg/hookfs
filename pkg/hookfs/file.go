@@ -204,7 +204,17 @@ func (h *hookFile) Allocate(off uint64, size uint64, mode uint32) fuse.Status {
 	return h.file.Allocate(off, size, mode)
 }
 
-// implements nodefs.Flock
-func (h *hookFile) Flock(flags int) fuse.Status {
-	return h.file.Flock(flags)
+//implements nodefs,GetLk
+func (h *hookFile) GetLk(owner uint64, lk *fuse.FileLock, flags uint32, out *fuse.FileLock) (code fuse.Status) {
+	return h.file.GetLk(owner, lk, flags, out)
+}
+
+//implements nodefs.SetLk
+func (h *hookFile) SetLk(owner uint64, lk *fuse.FileLock, flags uint32) (code fuse.Status) {
+	return h.file.SetLk(owner, lk, flags)
+}
+
+//implements nodefs,SetLkw
+func (h *hookFile) SetLkw(owner uint64, lk *fuse.FileLock, flags uint32) (code fuse.Status) {
+	return h.file.SetLkw(owner, lk, flags)
 }
