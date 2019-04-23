@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/qiffang/hookfs/pkg/example"
-	"github.com/qiffang/hookfs/pkg/hookfs"
+	"github.com/osrg/hookfs/pkg/example"
+	"github.com/osrg/hookfs/pkg/hookfs"
 	"math/rand"
 	"os"
 	"time"

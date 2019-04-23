@@ -5,7 +5,7 @@ import (
 	"syscall"
 	"time"
 
-	hookfs "github.com/qiffang/hookfs/pkg/hookfs"
+	hookfs "github.com/osrg/hookfs/pkg/hookfs"
 	log "github.com/sirupsen/logrus"
 )
 

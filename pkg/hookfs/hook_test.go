@@ -3,7 +3,7 @@ package hookfs
 import (
 	"fmt"
 	"github.com/hanwen/go-fuse/fuse"
-	"github.com/qiffang/hookfs/pkg/utils"
+	"github.com/osrg/hookfs/pkg/utils"
 	"log"
 	"os"
 	"path/filepath"

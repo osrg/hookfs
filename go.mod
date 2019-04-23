@@ -1,4 +1,4 @@
-module github.com/qiffang/hookfs
+module github.com/osrg/hookfs
 
 go 1.12
 
